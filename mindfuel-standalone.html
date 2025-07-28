@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindFuel - Daily Affirmation Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .affirmation-card {
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .affirmation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .affirmation-text {
+            font-size: 1.8rem;
+            font-weight: 300;
+            line-height: 1.4;
+            margin: 30px 0;
+            color: #2d3436;
+            font-style: italic;
+        }
+
+        .affirmation-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .subscription-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+
+        .feature p {
+            color: #636e72;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .subscriptions-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .subscription-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .subscription-item .email {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .subscription-item .status {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .subscription-item .actions {
+            margin-top: 5px;
+        }
+
+        .subscription-item .btn {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            margin: 2px;
+        }
+
+        .saved-affirmations {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .saved-affirmation-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .saved-affirmation-text {
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .saved-affirmation-meta {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .affirmation-text {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-brain"></i> MindFuel</h1>
+            <p>Transform your mindset with daily affirmations - Works offline!</p>
+        </header>
+
+        <main class="main-content">
+            <div class="card affirmation-card">
+                <div class="affirmation-category" id="category">Daily Affirmation</div>
+                <div class="affirmation-text" id="affirmation">
+                    "I am capable of achieving great things"
+                </div>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Generating your affirmation...</p>
+                </div>
+                <div class="success-message" id="successMessage"></div>
+                <div class="error-message" id="errorMessage"></div>
+                <button class="btn" onclick="generateAffirmation()">
+                    <i class="fas fa-sync-alt"></i> New Affirmation
+                </button>
+                <button class="btn btn-secondary" onclick="saveAffirmation()">
+                    <i class="fas fa-heart"></i> Save Affirmation
+                </button>
+                <button class="btn btn-secondary" onclick="showSavedAffirmations()">
+                    <i class="fas fa-bookmark"></i> View Saved
+                </button>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-bell"></i> Daily Affirmation Reminders</h2>
+                <p style="margin-bottom: 20px; color: #636e72;">
+                    Set up daily reminders to receive affirmations at your preferred time.
+                </p>
+                
+                <form class="subscription-form" id="subscriptionForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Name (Optional)</label>
+                        <input type="text" id="name" name="name" placeholder="Your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="categories">Categories (Optional)</label>
+                        <select id="categories" name="categories">
+                            <option value="general">General</option>
+                            <option value="confidence">Confidence</option>
+                            <option value="growth">Growth</option>
+                            <option value="success">Success</option>
+                            <option value="gratitude">Gratitude</option>
+                            <option value="mindfulness">Mindfulness</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reminderTime">Reminder Time</label>
+                        <input type="time" id="reminderTime" name="reminderTime" value="09:00">
+                    </div>
+                    
+                    <button type="submit" class="btn">
+                        <i class="fas fa-paper-plane"></i> Set Reminder
+                    </button>
+                </form>
+
+                <div class="subscriptions-list" id="subscriptionsList">
+                    <!-- Subscriptions will be displayed here -->
+                </div>
+            </div>
+        </main>
+
+        <section class="features">
+            <div class="feature">
+                <i class="fas fa-clock"></i>
+                <h3>Daily Reminders</h3>
+                <p>Set up daily reminders to receive affirmations at your preferred time.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-magic"></i>
+                <h3>Personalized</h3>
+                <p>Get affirmations tailored to your preferences and current mindset.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i>
+                <h3>Save Favorites</h3>
+                <p>Save your favorite affirmations for later reference and inspiration.</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Privacy First</h3>
+                <p>All data is stored locally on your device - no server required!</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2024 MindFuel. Transform your mindset, one affirmation at a time.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Affirmation data stored locally
+        const affirmations = [
+            { text: "I am capable of achieving great things", category: "confidence" },
+            { text: "Every day I grow stronger and more confident", category: "growth" },
+            { text: "I attract positive energy and opportunities", category: "positivity" },
+            { text: "My potential is limitless", category: "confidence" },
+            { text: "I am worthy of love, respect, and happiness", category: "self-worth" },
+            { text: "I choose to be happy and grateful today", category: "gratitude" },
+            { text: "I am in control of my thoughts and emotions", category: "mindfulness" },
+            { text: "Success is my natural state", category: "success" },
+            { text: "I am surrounded by abundance", category: "abundance" },
+            { text: "My dreams are valid and achievable", category: "dreams" },
+            { text: "I am resilient and can overcome any challenge", category: "resilience" },
+            { text: "I radiate confidence and inner peace", category: "peace" },
+            { text: "I am a magnet for success and prosperity", category: "success" },
+            { text: "Every setback is a setup for a comeback", category: "resilience" },
+            { text: "I am becoming the best version of myself", category: "growth" },
+            { text: "I trust the journey of my life", category: "mindfulness" },
+            { text: "I am open to receiving all the good that life has to offer", category: "abundance" },
+            { text: "I am confident in my abilities and decisions", category: "confidence" },
+            { text: "I am grateful for all the blessings in my life", category: "gratitude" },
+            { text: "I am worthy of all the success I desire", category: "self-worth" },
+            { text: "I am a powerful creator of my own reality", category: "confidence" },
+            { text: "I am constantly growing and evolving", category: "growth" },
+            { text: "I am surrounded by love and support", category: "positivity" },
+            { text: "I am capable of handling any situation with grace", category: "mindfulness" },
+            { text: "I am attracting abundance in all areas of my life", category: "abundance" }
+        ];
+
+        // Local storage keys
+        const STORAGE_KEYS = {
+            SUBSCRIPTIONS: 'mindfuel_subscriptions',
+            SAVED_AFFIRMATIONS: 'mindfuel_saved_affirmations',
+            LAST_GENERATED: 'mindfuel_last_generated'
+        };
+
+        // Generate random affirmation
+        function generateAffirmation(category = null) {
+            const loading = document.getElementById('loading');
+            const affirmation = document.getElementById('affirmation');
+            const categoryElement = document.getElementById('category');
+            const errorMessage = document.getElementById('errorMessage');
+
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            setTimeout(() => {
+                let filteredAffirmations = affirmations;
+                
+                if (category && category !== 'general') {
+                    filteredAffirmations = affirmations.filter(a => a.category === category);
+                }
+
+                if (filteredAffirmations.length === 0) {
+                    filteredAffirmations = affirmations;
+                }
+
+                const randomAffirmation = filteredAffirmations[Math.floor(Math.random() * filteredAffirmations.length)];
+                
+                affirmation.textContent = `"${randomAffirmation.text}"`;
+                categoryElement.textContent = randomAffirmation.category;
+                
+                // Save last generated affirmation
+                localStorage.setItem(STORAGE_KEYS.LAST_GENERATED, JSON.stringify(randomAffirmation));
+                
+                loading.style.display = 'none';
+            }, 500);
+        }
+
+        // Save current affirmation
+        function saveAffirmation() {
+            const affirmationText = document.getElementById('affirmation').textContent;
+            const category = document.getElementById('category').textContent;
+            
+            if (affirmationText === '"I am capable of achieving great things"') {
+                showMessage('Please generate a new affirmation first!', 'error');
+                return;
+            }
+
+            const savedAffirmations = JSON.parse(localStorage.getItem(STORAGE_KEYS.SAVED_AFFIRMATIONS) || '[]');
+            const newAffirmation = {
+                text: affirmationText.replace(/"/g, ''),
+                category: category,
+                savedAt: new Date().toISOString()
+            };
+
+            // Check if already saved
+            const alreadySaved = savedAffirmations.some(a => a.text === newAffirmation.text);
+            if (alreadySaved) {
+                showMessage('This affirmation is already saved!', 'error');
+                return;
+            }
+
+            savedAffirmations.push(newAffirmation);
+            localStorage.setItem(STORAGE_KEYS.SAVED_AFFIRMATIONS, JSON.stringify(savedAffirmations));
+            
+            showMessage('Affirmation saved successfully!', 'success');
+        }
+
+        // Show saved affirmations
+        function showSavedAffirmations() {
+            const savedAffirmations = JSON.parse(localStorage.getItem(STORAGE_KEYS.SAVED_AFFIRMATIONS) || '[]');
+            
+            if (savedAffirmations.length === 0) {
+                showMessage('No saved affirmations yet!', 'error');
+                return;
+            }
+
+            const container = document.getElementById('subscriptionsList');
+            container.innerHTML = '<h3 style="margin-bottom: 15px;">Saved Affirmations</h3>';
+            
+            savedAffirmations.forEach((affirmation, index) => {
+                const date = new Date(affirmation.savedAt).toLocaleDateString();
+                container.innerHTML += `
+                    <div class="saved-affirmation-item">
+                        <div class="saved-affirmation-text">"${affirmation.text}"</div>
+                        <div class="saved-affirmation-meta">
+                            ${affirmation.category} • Saved on ${date}
+                        </div>
+                        <div class="actions">
+                            <button class="btn" onclick="removeSavedAffirmation(${index})">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Remove saved affirmation
+        function removeSavedAffirmation(index) {
+            const savedAffirmations = JSON.parse(localStorage.getItem(STORAGE_KEYS.SAVED_AFFIRMATIONS) || '[]');
+            savedAffirmations.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.SAVED_AFFIRMATIONS, JSON.stringify(savedAffirmations));
+            showSavedAffirmations();
+            showMessage('Affirmation removed from saved list!', 'success');
+        }
+
+        // Handle subscription form
+        document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const email = formData.get('email');
+            const name = formData.get('name');
+            const categories = formData.get('categories');
+            const reminderTime = formData.get('reminderTime');
+            
+            if (!email) {
+                showMessage('Please enter an email address', 'error');
+                return;
+            }
+
+            const subscriptions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBSCRIPTIONS) || '[]');
+            
+            // Check if subscription already exists
+            const existingIndex = subscriptions.findIndex(s => s.email === email);
+            if (existingIndex !== -1) {
+                subscriptions[existingIndex] = {
+                    email,
+                    name: name || 'Anonymous',
+                    categories,
+                    reminderTime,
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                };
+            } else {
+                subscriptions.push({
+                    email,
+                    name: name || 'Anonymous',
+                    categories,
+                    reminderTime,
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                });
+            }
+
+            localStorage.setItem(STORAGE_KEYS.SUBSCRIPTIONS, JSON.stringify(subscriptions));
+            
+            showMessage('Reminder set successfully! You\'ll receive affirmations at ' + reminderTime, 'success');
+            this.reset();
+            displaySubscriptions();
+        });
+
+        // Display subscriptions
+        function displaySubscriptions() {
+            const subscriptions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBSCRIPTIONS) || '[]');
+            const container = document.getElementById('subscriptionsList');
+            
+            if (subscriptions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; margin-top: 20px;">No reminders set yet</p>';
+                return;
+            }
+
+            container.innerHTML = subscriptions.map((sub, index) => `
+                <div class="subscription-item">
+                    <div class="email">${sub.email}</div>
+                    <div class="status">
+                        ${sub.name} • ${sub.categories} • ${sub.reminderTime} • 
+                        ${sub.isActive ? 'Active' : 'Inactive'}
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="toggleSubscription(${index})">
+                            ${sub.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button class="btn" onclick="removeSubscription(${index})">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Toggle subscription status
+        function toggleSubscription(index) {
+            const subscriptions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBSCRIPTIONS) || '[]');
+            subscriptions[index].isActive = !subscriptions[index].isActive;
+            localStorage.setItem(STORAGE_KEYS.SUBSCRIPTIONS, JSON.stringify(subscriptions));
+            displaySubscriptions();
+        }
+
+        // Remove subscription
+        function removeSubscription(index) {
+            const subscriptions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBSCRIPTIONS) || '[]');
+            subscriptions.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.SUBSCRIPTIONS, JSON.stringify(subscriptions));
+            displaySubscriptions();
+            showMessage('Reminder removed successfully!', 'success');
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            
+            if (type === 'success') {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+            } else {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+            
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Check for daily reminders
+        function checkDailyReminders() {
+            const subscriptions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBSCRIPTIONS) || '[]');
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            subscriptions.forEach(sub => {
+                if (sub.isActive && sub.reminderTime === currentTime) {
+                    // Check if we already sent today
+                    const lastSent = localStorage.getItem(`last_sent_${sub.email}`);
+                    const today = now.toDateString();
+                    
+                    if (lastSent !== today) {
+                        // Generate affirmation for this subscription
+                        const category = sub.categories;
+                        const filteredAffirmations = category === 'general' ? 
+                            affirmations : 
+                            affirmations.filter(a => a.category === category);
+                        
+                        const randomAffirmation = filteredAffirmations[Math.floor(Math.random() * filteredAffirmations.length)];
+                        
+                        // Show notification (if supported)
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('MindFuel Daily Affirmation', {
+                                body: randomAffirmation.text,
+                                icon: '/favicon.ico'
+                            });
+                        }
+                        
+                        // Save that we sent today
+                        localStorage.setItem(`last_sent_${sub.email}`, today);
+                    }
+                }
+            });
+        }
+
+        // Request notification permission
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            generateAffirmation();
+            displaySubscriptions();
+            requestNotificationPermission();
+            
+            // Check reminders every minute
+            setInterval(checkDailyReminders, 60000);
+            
+            // Check immediately
+            checkDailyReminders();
+        });
+    </script>
+</body>
+</html> 
